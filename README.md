@@ -2,10 +2,10 @@
 
 ### Contents
 
-1. [Interacting with the server]() - how to make requests and recieve responses
-2. [Handing entities]() - Creating, modifying and deleteing entities
-3. [Examples]() - How to perform common tasks
-4. [Customization]() - How to customize the UI and network interactions
+1. [Interacting with the server](https://github.com/chat-sdk/docs#interacting-with-the-server) - how to make requests and recieve responses
+2. [Handing entities](https://github.com/chat-sdk/docs#handling-entities) - Creating, modifying and deleteing entities
+3. [Code Examples](https://github.com/chat-sdk/docs#code-examples) - How to perform common tasks
+4. [UI Customization](https://github.com/chat-sdk/docs#customizing-the-user-interface) - How to customize the UI and network interactions
 
 ### Architecture and getting started
 
@@ -22,7 +22,7 @@ The Chat SDK is broken down into the following major parts:
 
 Now that you know the basic structure, we're going to go into some detail about some important classes and design patterns that can be used to manipulate the Chat SDK. 
 
-## 1. Interacting With The Server
+## Interacting With The Server
 
 In this section an explanation will be provide of how to interact with the messaging server. Performing tasks like creating threads, sending messages, working with users. 
 
