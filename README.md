@@ -1,17 +1,17 @@
 ## Chat SDK Development Guide
 
-#### Contents
+### Contents
 
 1. [Interacting with the server]() - how to make requests and recieve responses
 2. [Handing entities]() - Creating, modifying and deleteing entities
 3. [Examples]() - How to perform common tasks
 4. [Customization]() - How to customize the UI and network interactions
 
-#### Architecture and getting started
+### Architecture and getting started
 
 The easiesy way to get started is by understanding the core principles that are used in Chat SDK. Once you understand these principles and design patterns, it will make customization much easier. 
 
-##### High level Architecture
+#### High level Architecture
 
 The Chat SDK is broken down into the following major parts:
 
@@ -22,11 +22,11 @@ The Chat SDK is broken down into the following major parts:
 
 Now that you know the basic structure, we're going to go into some detail about some important classes and design patterns that can be used to manipulate the Chat SDK. 
 
-## Interacting with the server
+## 1. Interacting With The Server
 
 In this section an explanation will be provide of how to interact with the messaging server. Performing tasks like creating threads, sending messages, working with users. 
 
-#### Core Concepts
+### Core Concepts
 
 The client server interaction generally looks like this:
 
@@ -47,7 +47,7 @@ This can be illustrated with some simple examples:
 
 To create a public thread, the UI calls the following:
 
-**ObjC**
+*iOS*
 
 ```
 [[BNetworkManager sharedManager].a.publicThread createPublicThreadWithName: name]
@@ -61,7 +61,7 @@ Or a more concise form:
 [NM.publicThread createPublicThreadWithName: name]
 ```
 
-**Java**
+*Android*
 
 ```
 NetworkManager.shared().a.publicThread().createPublicThreadWithName(threadName)
@@ -76,34 +76,34 @@ NM.publicThread().createPublicThreadWithName(threadName)
 ```
 
 >**Note:**
->The NM class is just a convenience class that contains static getter functions to make calls to the NetworkManager more concise. The NM class should always be used unless you want to set a new handler. 
+>The NM class is just a convenience class that contains static getter functions to make calls to the NetworkManager more concise. The NM class should always be used unless you want to **set** a new handler. 
 
-**Takeaway**
+### Takeaway
 
-The most important point is that if you want to find out which services are available, you should start by looking at the handler classes. These have some documentation and their names give you a good clue as to what they do. 
+The most important point is that if you want to find out which services are available, you should start by looking at the handler classes. These are documented and their names give you a good idea as to what they do. 
 
 You can find a full list of handler classes in the `BNetworkFacade` protocol for iOS and the `BaseNetworkAdapter` class for Android. 
 
->**Case Study**
+>**Case Study**  
 >Imagine you wanted to find out how to send an image message. First you would look at the `BNetworkFacade` or the `BaseNetworkAdapter` and you would see the following property `ImageMessageHandler`. If you open that interface you would see the function `sendMessageWithImage`. Calling this would cause the image to be uploaded ot the server and then the image message would be added to the thread. 
 
 ### Handling the response
 
 After we've made a request to the server, we will need to wait some time for the server to respond. Generally speaking there are two ways to handle the response:
 
-1. Using the Promise or Observable returned by the function
+1. Using the **Promise** or **Observable** returned by the function
 2. Listening for app level notifications
 
 #### Promises and Observables
 
-This document won't go into a full explanation of promises and observables because they are very common design patterns and there are plenty of excellent explantions available online. The basic idea is that the function will return an object which will allow you to register a callback to recieve a notificaiton when the function server response comes back.
+This document won't go into a full explanation of promises and observables because they are very common design patterns and there are plenty of excellent explantions available online. The basic idea is that the function will return an object which will allow you to register a callback to recieve a notification when the function server response comes back.
 
 >**Note**  
 >A common mistake when using Observables is to forget to call `subscribe()`. Unless you call `subscribe()`, the method won't actually be executed! For example, `pushUser()` will do nothing. You have to call `pushUser().subscribe()` and then the method will be executed.  
 
 In our example of creating a public thread:
 
-**ObjC**
+*iOS*
 
 ```
 [NM.publicThread createPublicThreadWithName:name].thenOnMain(^id(id<PThread> thread) {
@@ -115,7 +115,7 @@ In our example of creating a public thread:
 });
 ```
 
-**Java**
+*Android*
 
 ```
 NM.publicThread().createPublicThreadWithName(threadName)
@@ -134,9 +134,12 @@ NM.publicThread().createPublicThreadWithName(threadName)
 
 In each example, we can define a function that should be called if the request is successful and another that will be called if there is an error. 
 
+>**Note**  
+>You can use the `observeOn` function to tell the observable to execute the result on the main thread. 
+
 #### App level events
 
-There are some events that aren't a result of a function that we have called. For example, if another user sends us a messave. These events are handled slightly differently in iOS and Android:
+There are some events that don't happen as a result of a function that we have called. For example, if another user sends us a message. These events are handled slightly differently in iOS and Android:
 
 #### iOS
 
@@ -207,7 +210,7 @@ The Chat SDK also includes a helper class called `DisposableList`. You can add m
 
 ## Handling Entities
 
-##### Instant Messaging basics
+### Instant Messaging basics
 
 In an instant messenger there are three core entities:
 
@@ -226,13 +229,13 @@ Common tasks are handled by the `BStorageManager` singleton iOS and `co.chatsdk.
 
 ### Creating a new Entity
 
-**iOS**
+*iOS*
 
 ```
 id<PMessage> message = [[BStorageManager sharedManager].a createEntity:bMessageEntity];
 ```
 
-**Android**
+*Android*
 
 ```
 Message message = StorageManager.shared().createEntity(Message.class);
@@ -240,14 +243,14 @@ Message message = StorageManager.shared().createEntity(Message.class);
 
 ### Saving an entity
 
-**iOS**
+*iOS*
 
 ```
 message.type = @(bMessageTypeText);
 [[BStorageManager sharedManager].a save];
 ```
 
-**Android**
+*Android*
 
 ```
 message.setMessageType(MessageType.Text);
@@ -256,13 +259,13 @@ message.update();
 
 ### Fetching an entity using it's entity ID
 
-**iOS**
+*iOS*
 
 ```
 id<PUser> user = [[BStorageManager sharedManager].a fetchEntityWithID:userEntityID withType:bUserEntity];
 ```
 
-**Android**
+*Android*
 
 ```
 User user = StorageManager.shared().fetchEntityWithEntityID(userEntityID, User.class);
@@ -272,14 +275,14 @@ User user = StorageManager.shared().fetchEntityWithEntityID(userEntityID, User.c
 
 ### Deleting entities
 
-**iOS**
+*iOS*
 
 ```
 id<PUser> user = [[BStorageManager sharedManager].a fetchEntityWithID:userEntityID withType:bUserEntity];
 [[BStorageManager sharedManager].a deleteEntity: user]
 ```
 
-**Android**
+*Android*
 
 ```
 User user = StorageManager.shared().fetchEntityWithEntityID(userEntityID, User.class);
@@ -290,7 +293,7 @@ DaoCore.deleteEntity(user);
 
 More advanced queries are also possible. 
 
-**iOS**
+*iOS*
 
 Get the current user's contacts.
 
@@ -299,7 +302,7 @@ NSPredicate * predicate = [NSPredicate predicateWithFormat:@"type = %@ AND owner
 NSArray * entities = [[BStorageManager sharedManager].a fetchEntitiesWithName:bUserConnectionEntity withPredicate:predicate];
 ```
 
-**Android**
+*Android*
 
 ```
 List<ContactLink> contactLinks = DaoCore.fetchEntitiesWithProperty(ContactLink.class,
@@ -308,7 +311,7 @@ List<ContactLink> contactLinks = DaoCore.fetchEntitiesWithProperty(ContactLink.c
 
 For more advanced queries it's recommended to look at the documentation for CoreData and GreenDAO. 
 
-## Examples
+## Code Examples
 
 In this section concrete examples will be provided of how to perform common tasks.
 
@@ -322,14 +325,14 @@ It is very important to authenticate your user before you load up any of the Cha
 
 To authenticate a user you need to pass an account details object to the authenticate method in the authentication handler. 
 
-**iOS**
+*iOS*
 
 ```
 BAccountDetails * accountDetails = [BAccountDetails username: @"Joe" password:@"Joe123"];
 [NM.auth authenticate: accountDetails].thenOnMain(...);
 ```
 
-**Android**
+*Android*
 
 ```
 AccountDetails details = username("Joe", "Joe123");
@@ -340,14 +343,14 @@ NM.auth().authenticate(details).subscribe(...);
 
 To register a new user, just use the Register type. 
 
-**iOS**
+*iOS*
 
 ```
 BAccountDetails * accountDetails = [BAccountDetails signUp: @"Joe" password:@"Joe123"];
 [NM.auth authenticate: accountDetails].thenOnMain(...);
 ```
 
-**Android**
+*Android*
 
 ```
 AccountDetails details = signUp("Joe", "Joe123");
@@ -358,7 +361,7 @@ NM.auth().authenticate(details).subscribe(...);
 
 The Chat SDK will automatically cache the user's login details saving them from logging in each time the app opens. 
 
-**iOS**
+*iOS*
 
 ```
 [NM.auth authenticateWithCachedToken].thenOnMain(^id(id success) {
@@ -367,7 +370,7 @@ The Chat SDK will automatically cache the user's login details saving them from 
 }, Nil);
 ```
 
-**Android**
+*Android*
 
 ```
 NM.auth().authenticateWithCachedToken().subscribe(...);
@@ -375,13 +378,13 @@ NM.auth().authenticateWithCachedToken().subscribe(...);
 
 #### Logging out
 
-**iOS**
+*iOS*
 
 ```
 [NM.auth logout];
 ```
 
-**Android**
+*Android*
 
 ```
 NM.auth().logout().subscribe(...);
@@ -401,14 +404,14 @@ With Firebase, you can also authenticate using a custom token that's been genera
 
 ##### Authenticating on the client
 
-**iOS**
+*iOS*
 
 ```
 BAccountDetails * details = [BAccountDetails token:@"Token"];
 [NM.auth authenticate: details].thenOnMain(...);
 ```
 
-**Android**
+*Android*
 
 ```
 AccountDetails details = new AccountDetails.token("Token");
@@ -421,7 +424,7 @@ NM.auth().authenticate(details).subscribe(...);
 
 The user entity is designed to be customisable. For that reason most of the user's properties are stored as key-value pairs. Some of the more common values also have getters and setters for convenience. Custom data can be set and retrieved by doing the following: 
 
-**iOS**
+*iOS*
 
 ```
 // Set the value
@@ -431,7 +434,7 @@ The user entity is designed to be customisable. For that reason most of the user
 [user metaStringForKey:@"key"];
 ```
 
-**Android**
+*Android*
 
 ```
 // Set the value
@@ -447,13 +450,13 @@ When you push a user, these values will automatically be synchronized with the s
 
 To synchronize the current user with the server the following method can be used:
 
-**iOS**
+*iOS*
 
 ```
 [NM.core pushUser].thenOnMain(...);
 ```
 
-**Android**
+*Android*
 
 ```
 NM.core().pushUser().subscribe(...);
@@ -468,13 +471,13 @@ In most cases, the Chat SDK will update the local database automatically if a us
 
 In case you want to handle this manually, you can use the following methods:
 
-**iOS**
+*iOS*
 
 ```
 [NM.core observeUser: @"entityID"]
 ```
 
-**Android**
+*Android*
 
 ```
 // Subscribe to user
@@ -494,7 +497,7 @@ In iOS, threads are handled by the Core Handler. In Android, they are handled by
 
 To create a thread, you need a list of user entities that you want to add. The following code will create a new thread and then display it in the chat view. 
 
-**iOS**
+*iOS*
 
 ```
 [NM.core createThreadWithUsers:@[user1, user2,...] name: @"Optional Name" threadCreated:^(NSError * error, id<PThread> thread) {
@@ -503,7 +506,7 @@ To create a thread, you need a list of user entities that you want to add. The f
 }];
 ```
 
-**Android**
+*Android*
 
 ```
 NM.thread().createThread("Optional Name", user1, user2, user3...)
@@ -523,7 +526,7 @@ NM.thread().createThread("Optional Name", user1, user2, user3...)
 
 #### Adding or removing a user to a thread
 
-**iOS**
+*iOS*
 
 ```
 // Adding users
@@ -533,7 +536,7 @@ NM.thread().createThread("Optional Name", user1, user2, user3...)
 [NM.core removeUsers:@[user1, user2,...] fromThread:thread].thenOnMain(...);
 ```
 
-**Android**
+*Android*
 
 ```
 // Adding users
@@ -547,7 +550,7 @@ NM.thread().removeUsersFromThread(user1, user2,...).subscribe(...);
 
 Public threads are visible to everyone who is logged into the app. They are more like public chat rooms. 
 
-**iOS**
+*iOS*
 
 ```
 [NM.publicThread createPublicThreadWithName:name].thenOnMain(^id(id<PThread> thread) {
@@ -560,7 +563,7 @@ Public threads are visible to everyone who is logged into the app. They are more
 });
 ```
 
-**Android**
+*Android*
 
 ```
 NM.publicThread().createPublicThreadWithName(threadName)
@@ -581,17 +584,149 @@ NM.publicThread().createPublicThreadWithName(threadName)
 
 Sometimes it's useful to get a full list of threads for a particular type.
 
-**iOS**
+*iOS*
 
 ```
 NSArray * threads = [NM.core threadsWithType:bThreadTypePublicGroup];
 ```
 
-**Android**
+*Android*
 
 ```
 List<Thread> * threads = NM.thread().getThreads(ThreadType.Public);
 ```
+
+### Messaging
+
+Send a text message to a user:
+
+_iOS_
+
+```
+[NM.core sendMessageWithText:text withThreadEntityID:_thread.entityID].thenOnMain(...);
+```
+
+_Android_
+
+```
+NM.thread().sendMessageWithText("Message Text", thread).subscribe(...);
+```
+
+
+## Customizing the User Interface
+
+There are two main ways to customize the user interface. 
+
+1. Modify the UI module directly
+2. Change the UI by subclassing and using the **Interface Manager**
+
+### Modifying the UI directly
+
+Since the Chat SDK is open source, you could modify the user interface files directly. This has some benefits as well as some disadvantages. The main advantage is that this method is quick and doesn't require any configuration and allows you to see your changes immediately. The problem comes when it's time to upgrade. If you just replaced the UI module with the latest version from Github, all of your customizations would be lost and you would go back to the vanilla Chat SDK UI. 
+
+The way to get around this is to fork the project using Git. You would make all of your customizations on a separate branch. When it was time to update the UI module, you would need to merge the latest version with your branch and resolve any conflicts that may have arisen. 
+
+### Subclassing using the Inerface Manager
+
+### Using a handler
+
+Now that you know how to define a handler, it's useful to know how to call a handler from the code. 
+
+All the handlers can be accessed through the `BNetworkManager` singleton. For example, to access the last online handler you would use the following code: 
+
+```ObjC
+[BNetworkManager sharedManager].a.lastOnline getLastOnlineForUser: ... 
+```
+
+We include the `a` because this is accessing the network adapter. 
+
+To send a message, you would use:
+
+```ObjC
+[BNetworkManager sharedManager].a.core sendMessage: (id<PMessage>) message
+```
+
+A good approach to learn the SDK is first to identify the handler you are interested in and then search for it in the code. There you will see how it can be used. 
+
+## Customizing the user interface
+
+The second method is a little more complex to setup initially but it more robust over the longer term. This method involves subclassing the UI element that you need to modify. After you've made your changes, you need to find a way to tell the Chat SDK to use your subclass rather than the default class. That can be achieved using the `InterfaceManager`.
+
+The `InterfaceManager` follows a similar parttern to the `NetworkManager`. It is a singleton class that has a replacable adapter which provides methods that are used by the UI to request views. For example, when the app wants to show a user profile view, it uses the following method:
+
+_iOS_
+
+```
+UIViewController * profileView = [[BInterfaceManager  sharedManager].a profileViewControllerWithUser:user];
+```
+
+_Android_
+
+```
+InterfaceManager.shared().a.startProfileActivity(getContext(), clickedUser.getEntityID());
+```
+
+Notice that the calling class just requests the profile view controller or activity. It has no idea what class will actually be returned. That is decided by the interface manager. 
+
+The first step to add your own custom UI is to subclass the interface adapter. So we create a new class called `MyAppInterfaceAdapter` which inherits from the `DefaultInterfaceAdapter` in iOS and the `BaseInterfaceAdapter` in Android. 
+
+_iOS_
+
+```
+@interface MyAppInterfaceAdapter : DefaultInterfaceAdapter { ...
+```
+
+_Android_
+
+```
+public class MyAppInterfaceAdaper extends BaseInterfaceAdapter { ...
+```
+
+Now we need to tell the Chat SDK to use our custom interface adapter. In the main app start method where you initialize the Chat SDK add the following:
+
+_iOS_
+
+```
+[BInterfaceManager sharedManager].a = [[MyAppDefaultInterfaceAdapter alloc] init];
+```
+
+_Android_
+
+```
+InterfaceManager.shared().a = new MyAppInterfaceAdapter(context);
+```
+
+Next, we need to subclass the view we want to change. For example, If we wanted to modify the profile view, the first step would be to create a subclass. We could call this `MyAppProfileViewController` for iOS or `MyAppProfileActivity` for Android.
+
+Finally, we need to override the method that provides this view in our interface adapter. To do that, add the following to your `MyAppInterfaceAdapter`.
+
+_iOS_
+
+```
+-(UIViewController *) profileViewControllerWithUser: (id<PUser>) user {
+    
+    UIStoryboard * storyboard = [UIStoryboard storyboardWithName:@"MyAppProfile"
+                                                          bundle:[NSBundle chatUIBundle]];
+    
+    BMyAppProfileTableViewController * controller = [storyboard instantiateInitialViewController];
+
+    controller.user = user;
+    return controller;
+}
+```
+
+_Android_
+
+```
+public Class getProfileActivity() {
+    return MyAppProfileActivity.class;
+}
+```
+
+So now, lets see what happens. When the app requests the profile view from the **interface manager**, the **interface manager** will ask it's adapter to provide the view. Since we replaced the standard adapter with a custom version, the **getProfile** method that you just created will be called. It will return your customized profile view which will be used by the Chat SDK. 
+
+This method may seem a little more complex to setup initially, but it's more convenient in the long term. It means that you don't need to make any modifications to the Chat SDK library and updates can be installed without worrying about losing your changes. 
+
 
 
 
