@@ -328,14 +328,14 @@ To authenticate a user you need to pass an account details object to the authent
 *iOS*
 
 ```
-BAccountDetails * accountDetails = [BAccountDetails username: @"Joe" password:@"Joe123"];
+BAccountDetails * accountDetails = [BAccountDetails username: @"some.email@domain.com" password:@"some password"];
 [NM.auth authenticate: accountDetails].thenOnMain(...);
 ```
 
 *Android*
 
 ```
-AccountDetails details = username("Joe", "Joe123");
+AccountDetails details = username("some.email@domain.com", "some password");
 NM.auth().authenticate(details).subscribe(...);
 ```
 
@@ -400,21 +400,49 @@ With Firebase, you can also authenticate using a custom token that's been genera
 
 ##### Generating the token
 
-<HERE>
+To generate a token, you should follow the Firebase [custom authentication guide](https://firebase.google.com/docs/auth/admin/create-custom-tokens).
+
+In PHP, an implementation may look like this:
+
+```
+// Get your service account's email address and private key from the JSON key file
+$service_account_email = "abc-123@a-b-c-123.iam.gserviceaccount.com";
+$private_key = "-----BEGIN PRIVATE KEY-----...";
+
+function create_custom_token($uid, $is_premium_account) {
+  global $service_account_email, $private_key;
+
+  $now_seconds = time();
+  $payload = array(
+    "iss" => $service_account_email,
+    "sub" => $service_account_email,
+    "aud" => "https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit",
+    "iat" => $now_seconds,
+    "exp" => $now_seconds+(60*60),  // Maximum expiration time is one hour
+    "uid" => $uid,
+    "claims" => array(
+      "premium_account" => $is_premium_account
+    )
+  );
+  return JWT::encode($payload, $private_key, "RS256");
+}
+``` 
+
+The `id` should be the `id` your server uses to identify the user who is currently logged in. This token should be passed back to the app.
 
 ##### Authenticating on the client
 
 *iOS*
 
 ```
-BAccountDetails * details = [BAccountDetails token:@"Token"];
+BAccountDetails * details = [BAccountDetails token:@"Your token"];
 [NM.auth authenticate: details].thenOnMain(...);
 ```
 
 *Android*
 
 ```
-AccountDetails details = new AccountDetails.token("Token");
+AccountDetails details = new AccountDetails.token("Your token");
 NM.auth().authenticate(details).subscribe(...);
 ```
 
