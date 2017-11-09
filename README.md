@@ -515,6 +515,36 @@ NM.core().userOn(user);
 NM.core().userOff(user);
 ```
 
+### Contacts
+
+#### Adding a contact
+
+*iOS*
+
+```
+[NM.contact addContact:user withType:bUserConnectionTypeContact];
+```
+
+*Android*
+
+```
+NM.contact().addContact(user, ConnectionType.Contact).subscribe(...);
+```
+
+#### Getting a list of contacts
+
+*iOS*
+
+```
+NSArray * users = [NM.contact contactsWithType:bUserConnectionTypeContact];
+```
+
+*Android*
+
+```
+List<User> users = NM.contact().contacts();
+```
+
 ### Threads
 
 In the Chat SDK, a thread represents a conversation between a number of users. Threads can have different types: private, public, group etc... 
@@ -612,6 +642,8 @@ NM.publicThread().createPublicThreadWithName(threadName)
 
 Sometimes it's useful to get a full list of threads for a particular type.
 
+##### Public Threads
+
 *iOS*
 
 ```
@@ -622,6 +654,20 @@ NSArray * threads = [NM.core threadsWithType:bThreadTypePublicGroup];
 
 ```
 List<Thread> * threads = NM.thread().getThreads(ThreadType.Public);
+```
+
+##### Private Threads
+
+*iOS*
+
+```
+NSArray * threads = [NM.core threadsWithType:bThreadFilterPrivate];
+```
+
+*Android*
+
+```
+List<Thread> * threads = NM.thread().getThreads(ThreadType.Private);
 ```
 
 ### Messaging
