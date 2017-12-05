@@ -700,6 +700,44 @@ Since the Chat SDK is open source, you could modify the user interface files dir
 
 The way to get around this is to fork the project using Git. You would make all of your customizations on a separate branch. When it was time to update the UI module, you would need to merge the latest version with your branch and resolve any conflicts that may have arisen. 
 
+So here is an outline of the procedure. 
+
+1. Create a [fork](https://github.com/chat-sdk/chat-sdk-ios#fork-destination-box) of the Chat SDK project on Github
+2. Clone the fork to your computer using `git clone [link to your fork]`. You would replace the square brackes with the actual URL of your Github fork
+3. Open your Podfile and include the Chat SDK as development pods
+
+  ```
+  pod "ChatSDK", :path => "[Absolute path to the ChatSDK.podspec file]"
+  ```
+  
+  You should find where you downloaded the Chat SDK files and locate the **ChatSDK.podspec** file. Right click this file and click **Get Info**. Then click drag to highlight the paht after it says **Where:**. Press **Command + C** to copy this path to the clipboard. Then replace the square brackets with the path you copied. 
+4. Run `pod install`
+5. Modify the Chat SDK directly - you can do this from within Xcode
+
+#### Upgrading the Chat SDK
+
+In the future you may want to upgrade the Chat SDK library. To do this, you need to complete the following steps:
+
+1. Find the location where you saved the Chat SDK library 
+2. Open this location in the terminal app
+3. Add the orginal version of the Chat SDK as a remote
+
+  ```
+  git remote add chatsdk https://github.com/chat-sdk/chat-sdk-ios.git
+  ```
+  
+4. Merge the latest version of the Chat SDK with your fork
+
+  ```
+  git pull chatsdk master
+  ```
+  
+5. Resolve any conflicts
+
+  ```
+  git mergetool
+  ```
+
 ### Subclassing using the Inerface Manager
 
 ### Using a handler
@@ -801,7 +839,9 @@ So now, lets see what happens. When the app requests the profile view from the *
 
 This method may seem a little more complex to setup initially, but it's more convenient in the long term. It means that you don't need to make any modifications to the Chat SDK library and updates can be installed without worrying about losing your changes. 
 
+## Interacting Chat SDK from a server
 
+In some cases it is useful to be 
 
 
 
