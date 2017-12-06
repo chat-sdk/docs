@@ -515,6 +515,30 @@ NM.core().userOn(user);
 NM.core().userOff(user);
 ```
 
+#### Getting a user given the user's entity ID
+
+In some cases, you may have a user's entity ID and want to access the user object. To do this, you need to use the user wrapper object. 
+
+*iOS*
+  
+```
+CCUserWrapper * wrapper = [CCUserWrapper userWithEntityID: userID];
+[wrapper metaOn]
+[wrapper onlineOn]
+id<PUser> user = [wrapper model]
+```
+  
+*Android*
+  
+```
+UserWrapper wrapper = UserWrapper.initWithEntityId(userID);
+wrapper.metaOn();
+wrapper.onlineOn();
+User user = wrapper.getModel();  
+```
+  
+The user wrapper object is used to synchronize the local user object which is stored in the database with the remote user data stored in Firebase. When we call `metaOn` we are adding listeners so whenever the user's meta data changes on the server, the local database object will be automatically updated. `onlineOn` does a similar thing but with the user's presence (online/offline) state. 
+
 ### Contacts
 
 #### Adding a contact
@@ -544,6 +568,30 @@ NSArray * users = [NM.contact contactsWithType:bUserConnectionTypeContact];
 ```
 List<User> users = NM.contact().contacts();
 ```
+
+#### Adding a contact from a user ID
+
+If you want to manage your contact list on your own server, you can use the following code to display these users on the contacts screen.
+
+1. You would need to download the list of contacts from your server. The list should be composed of the entity IDs of the users. 
+
+2. Get the user object from the [entity ID]()
+  
+3. Add the user to contacts:
+
+  *iOS*
+  
+  ```
+  [NM.contact addContact: user withType: bUserConnectionTypeContact];
+  ```
+  
+  *Android*
+  
+  ```
+  NM.contact().addContact(user, ConnectionType.Contact);
+  ```
+
+4. We only need to do the above steps once. Once the user is added to contacts, whenever the app launches, all the necessary listeners will be added and the user will be displayed in the contacts view. 
 
 ### Threads
 
