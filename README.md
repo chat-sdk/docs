@@ -575,7 +575,7 @@ If you want to manage your contact list on your own server, you can use the foll
 
 1. You would need to download the list of contacts from your server. The list should be composed of the entity IDs of the users. 
 
-2. Get the user object from the [entity ID]()
+2. Download the user object using the entity ID. [See instructions here](https://github.com/chat-sdk/docs#getting-a-user-given-the-users-entity-id).
   
 3. Add the user to contacts:
 
