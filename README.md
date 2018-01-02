@@ -786,6 +786,7 @@ In the future you may want to upgrade the Chat SDK library. To do this, you need
   git mergetool
   ```
 
+[](#subclassing-using-the-inerface-manager)
 ### Subclassing using the Interface Manager
 
 ### Using a handler
