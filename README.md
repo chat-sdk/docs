@@ -865,6 +865,157 @@ So now, lets see what happens. When the app requests the profile view from the *
 
 This method may seem a little more complex to setup initially, but it's more convenient in the long term. It means that you don't need to make any modifications to the Chat SDK library and updates can be installed without worrying about losing your changes. 
 
+### Customizing message cells
+
+Since table views work very differently in Android and iOS, it's helpful to look at each separately. 
+
+#### iOS
+
+The chat view uses a `UITableView` and the cell type that is used when rendering a specific message type is setup in the `registerMessageCells` method. 
+
+```
+(void) registerMessageCells {
+    
+    // Default message types
+    
+    [self.tableView registerClass:[BTextMessageCell class] forCellReuseIdentifier:@(bMessageTypeText).stringValue];
+    [self.tableView registerClass:[BImageMessageCell class] forCellReuseIdentifier:@(bMessageTypeImage).stringValue];
+    [self.tableView registerClass:[BLocationCell class] forCellReuseIdentifier:@(bMessageTypeLocation).stringValue];
+    [self.tableView registerClass:[BSystemMessageCell class] forCellReuseIdentifier:@(bMessageTypeSystem).stringValue];
+    
+    // Some optional message types
+    if ([delegate respondsToSelector:@selector(customCellTypes)]) {
+        for (NSArray * cell in delegate.customCellTypes) {
+            [self.tableView registerClass:cell.firstObject forCellReuseIdentifier:[cell.lastObject stringValue]];
+        }
+    }
+}
+```
+
+First we setup the standard message types associating the cell class with a string identifier (in this case the integer value message type). 
+
+Then we loop over the custom cell types. This means that if you want to register your own cell type, you would need to override the `customCellTypes` method:
+
+```
+-(NSMutableArray *) customCellTypes {
+    NSMutableArray * types = [NSMutableArray arrayWithArray:[super customCellTypes]];
+    
+    [types addObject:@[[CustomMessageCell class], @(bMessageTypeText)]]
+    
+    return types;
+}
+```
+
+#### Android
+
+Currently, there isn't a way to define a completely custom message cell for Android. However, you can define a custom message handler which can modify the standard message cell view. To do this first you need to make a class that implements the `CustomMessageHandler` interface. 
+
+```
+public interface CustomMessageHandler {
+    void updateMessageCellView (Message message, Object viewHolder, Context context);
+}
+```
+
+Then you need to register your new class with the interface manager:
+
+```
+InterfaceManager.shared().a.addCustomMessageHandler(new YourCustomMessageHandler());
+```
+
+Then you need to implement the `updateMessageCellView` method. This method will be called for every cell and cells can be reused so if we're not careful we can run into problems. Imagine we want to add an icon to text message cells. 
+
+If we used something like `layout.addView` to add the icon, this would add an icon to every text view. But the second time the view was displayed, it would add a second icon! And when the cell was reused for an image message, that message would also have the icon. 
+
+To avoid this, we need to do the following:
+
+1. Check the cell type - is it text or image? 
+2. If it's a text view, check to see if we've already added an icon
+3. If we haven't, add the icon
+4. If it's not a text type and we have added an icon (it's been resued) remove the icon
+
+```
+    @Override
+    public void updateMessageCellView(final Message message, Object viewHolder, final Context context) {
+    
+        if(viewHolder instanceof MessagesListAdapter.MessageViewHolder) {
+        
+            // Get the view holder and layout
+            MessagesListAdapter.MessageViewHolder messageViewHolder = (MessagesListAdapter.MessageViewHolder) viewHolder;
+            ViewGroup layout = messageViewHolder.extraLayout;
+            
+            CustomMessageView customView = null;
+
+            // Loop over the child views
+            for(int i = 0; i < layout.getChildCount(); i++) {
+                View view = layout.getChildAt(i);
+                
+                // If the child view is an instance of our custom view break and save 
+                // the view
+                if(view instanceof CustomMessageView) {
+                    customView = (CustomMessageView) view;
+                    break;
+                }
+            }
+
+            // If this isn't the correct message type remove the view
+            if(message.getMessageType() != MessageType. ... ) {
+                if(customView != null) {
+                    layout.removeView(customView.getView());
+                }
+                return;
+            }
+
+			  // See note below
+            if(customView == null) {
+                customView = new CustomMessageView(context);
+                layout.addView(customView);
+            }
+            if(customView.getView().getParent() == null) {
+                layout.addView(customView.getView());
+            }
+
+            // The view has now been added so you can configure it as needed. 
+
+        }
+    }
+```
+
+> **Note**
+> If you display a custom view in the cell, it's recommended to use create your custom class that extends `LinearLayout`. Then make a property called `View view`. Then add a method called `getView()` which can be called by the below code. This is useful because it makes it easier to retrieve your custom view. You can loop over the message cell layout and check if any sub view is an `instanceOf` your custom view. Then you can get the actual custom view using `getView()`. 
+
+```
+public class CustomMessageView extends LinearLayout {
+
+    private View view;
+
+    public VideoMessageView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        initView();
+    }
+
+    public VideoMessageView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initView();
+    }
+
+    public VideoMessageView(Context context) {
+        super(context);
+        initView();
+    }
+
+    private void initView() {
+
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        view = inflater.inflate(R.layout.your_layout, null);
+    }
+
+    public View getView () {
+        return view;
+    }
+}
+
+```
+
 ## Modifying the database from your server
 
 In some cases it may be necessary to access the Firebase database directly from your server. To do this, you can use the [Firebase Admin SDK](https://firebase.google.com/docs/auth/admin/). 
