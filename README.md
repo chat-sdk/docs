@@ -2,14 +2,14 @@
 
 ### Contents
 
-1. [Interacting with the server](https://github.com/chat-sdk/docs#interacting-with-the-server) - how to make requests and recieve responses
-2. [Handing entities](https://github.com/chat-sdk/docs#handling-entities) - Creating, modifying and deleteing entities
+1. [Interacting with the server](https://github.com/chat-sdk/docs#interacting-with-the-server) - how to make requests and receive responses
+2. [Handing entities](https://github.com/chat-sdk/docs#handling-entities) - Creating, modifying and deleting entities
 3. [Code Examples](https://github.com/chat-sdk/docs#code-examples) - How to perform common tasks
 4. [UI Customization](https://github.com/chat-sdk/docs#customizing-the-user-interface) - How to customize the UI and network interactions
 
 ### Architecture and getting started
 
-The easiesy way to get started is by understanding the core principles that are used in Chat SDK. Once you understand these principles and design patterns, it will make customization much easier. 
+The easiest way to get started is by understanding the core principles that are used in Chat SDK. Once you understand these principles and design patterns, it will make customization much easier. 
 
 #### High level Architecture
 
@@ -36,7 +36,7 @@ The client server interaction generally looks like this:
 
 To perform these actions, you need to understand the Chat SDK service architecture. 
 
-1. **NetworkManager:** A singleton that makes the services availilable to the whole app
+1. **NetworkManager:** A singleton that makes the services available to the whole app
 2. **NetworkAdapter:** A wrapper class that contains references to all the possible services
 3. **Handler:** A service that contains a group of related functions
 4. **Function:** An individual action that can be performed.
@@ -69,7 +69,7 @@ NetworkManager.shared().a.publicThread().createPublicThreadWithName(threadName)
 
 >Here we have: Network Manager -> Adapter -> Handler -> Function
 
-Or a the concise form:
+Or the concise form:
 
 ```
 NM.publicThread().createPublicThreadWithName(threadName)
@@ -85,7 +85,7 @@ The most important point is that if you want to find out which services are avai
 You can find a full list of handler classes in the `BNetworkFacade` protocol for iOS and the `BaseNetworkAdapter` class for Android. 
 
 >**Case Study**  
->Imagine you wanted to find out how to send an image message. First you would look at the `BNetworkFacade` or the `BaseNetworkAdapter` and you would see the following property `ImageMessageHandler`. If you open that interface you would see the function `sendMessageWithImage`. Calling this would cause the image to be uploaded ot the server and then the image message would be added to the thread. 
+>Imagine you wanted to find out how to send an image message. First you would look at the `BNetworkFacade` or the `BaseNetworkAdapter` and you would see the following property `ImageMessageHandler`. If you open that interface you would see the function `sendMessageWithImage`. Calling this would cause the image to be uploaded to the server and then the image message would be added to the thread. 
 
 ### Handling the response
 
@@ -96,7 +96,7 @@ After we've made a request to the server, we will need to wait some time for the
 
 #### Promises and Observables
 
-This document won't go into a full explanation of promises and observables because they are very common design patterns and there are plenty of excellent explantions available online. The basic idea is that the function will return an object which will allow you to register a callback to recieve a notification when the function server response comes back.
+This document won't go into a full explanation of promises and observables because they are very common design patterns and there are plenty of excellent explanations available online. The basic idea is that the function will return an object which will allow you to register a callback to receive a notification when the function server response comes back.
 
 >**Note**  
 >A common mistake when using Observables is to forget to call `subscribe()`. Unless you call `subscribe()`, the method won't actually be executed! For example, `pushUser()` will do nothing. You have to call `pushUser().subscribe()` and then the method will be executed.  
@@ -143,7 +143,7 @@ There are some events that don't happen as a result of a function that we have c
 
 #### iOS
 
-In iOS these events are handled by notifications. You can find a full list in the `BNetworkFacade.h` file. For example, if we wanted to recieve notifications whenever a new message is received:
+In iOS these events are handled by notifications. You can find a full list in the `BNetworkFacade.h` file. For example, if we wanted to receive notifications whenever a new message is received:
 
 ```
 [_notificationList add:[[NSNotificationCenter defaultCenter] addObserverForName:bNotificationMessageAdded object:Nil queue:Nil usingBlock:^(NSNotification * notification) {
@@ -173,7 +173,7 @@ or
 NM.events().sourceOnMain()
 ```
 
-When you subscribe to this source, you will recieve a stream of `NetworkEvent` objects. You can also apply filters. For example:
+When you subscribe to this source, you will receive a stream of `NetworkEvent` objects. You can also apply filters. For example:
 
 ```
 NM.events().sourceOnMain()
@@ -206,7 +206,7 @@ d.dispose()
 The Chat SDK also includes a helper class called `DisposableList`. You can add multiple disposables to this list and then call `list.dispose()` to dispose of them all at one time. 
 
 >**Note:**
->It's important to dispose of all of your observables when you destroy an activity. Otherwise the observer will persist and may try to perform actions on an activity which no longer exists. This will cause the app to crash. 
+>It's important to dispose of all of your observables when you destroy an activity. Otherwise, the observer will persist and may try to perform actions on an activity which no longer exists. This will cause the app to crash. 
 
 ## Handling Entities
 
@@ -271,7 +271,7 @@ id<PUser> user = [[BStorageManager sharedManager].a fetchEntityWithID:userEntity
 User user = StorageManager.shared().fetchEntityWithEntityID(userEntityID, User.class);
 ```
 
-> There is also a useful `fetchOrCreate` method which will try to fetch an entity and if it doesn't exists, return an new entity. 
+> There is also a useful `fetchOrCreate` method which will try to fetch an entity and if it doesn't exist, return a new entity. 
 
 ### Deleting entities
 
@@ -450,7 +450,7 @@ NM.auth().authenticate(details).subscribe(...);
 
 #### User meta data
 
-The user entity is designed to be customisable. For that reason most of the user's properties are stored as key-value pairs. Some of the more common values also have getters and setters for convenience. Custom data can be set and retrieved by doing the following: 
+The user entity is designed to be customisable. For that reason most of the user's properties are stored as key-value pairs. Some of the more common properties also have getters and setters for convenience. Custom data can be set and retrieved by doing the following: 
 
 *iOS*
 
@@ -734,7 +734,6 @@ _Android_
 NM.thread().sendMessageWithText("Message Text", thread).subscribe(...);
 ```
 
-
 ## Customizing the User Interface
 
 There are two main ways to customize the user interface. 
@@ -751,14 +750,14 @@ The way to get around this is to fork the project using Git. You would make all 
 So here is an outline of the procedure. 
 
 1. Create a [fork](https://github.com/chat-sdk/chat-sdk-ios#fork-destination-box) of the Chat SDK project on Github
-2. Clone the fork to your computer using `git clone [link to your fork]`. You would replace the square brackes with the actual URL of your Github fork
+2. Clone the fork to your computer using `git clone [link to your fork]`. You would replace the square brackets with the actual URL of your Github fork
 3. Open your Podfile and include the Chat SDK as development pods
 
   ```
   pod "ChatSDK", :path => "[Absolute path to the ChatSDK.podspec file]"
   ```
   
-  You should find where you downloaded the Chat SDK files and locate the **ChatSDK.podspec** file. Right click this file and click **Get Info**. Then click drag to highlight the paht after it says **Where:**. Press **Command + C** to copy this path to the clipboard. Then replace the square brackets with the path you copied. 
+  You should find where you downloaded the Chat SDK files and locate the **ChatSDK.podspec** file. Right click this file and click **Get Info**. Then click drag to highlight the path after it says **Where:**. Press **Command + C** to copy this path to the clipboard. Then replace the square brackets with the path you copied. 
 4. Run `pod install`
 5. Modify the Chat SDK directly - you can do this from within Xcode
 
@@ -768,7 +767,7 @@ In the future you may want to upgrade the Chat SDK library. To do this, you need
 
 1. Find the location where you saved the Chat SDK library 
 2. Open this location in the terminal app
-3. Add the orginal version of the Chat SDK as a remote
+3. Add the original version of the Chat SDK as a remote
 
   ```
   git remote add chatsdk https://github.com/chat-sdk/chat-sdk-ios.git
@@ -787,33 +786,11 @@ In the future you may want to upgrade the Chat SDK library. To do this, you need
   ```
 
 [](#subclassing-using-the-inerface-manager)
-### Subclassing using the Interface Manager
+### Using the interface manager
 
-### Using a handler
+The second method is a little more complex to set up initially but it more robust over the longer term. This method involves subclassing the UI element that you need to modify. After you've made your changes, you need to find a way to tell the Chat SDK to use your subclass rather than the default class. That can be achieved using the `InterfaceManager`.
 
-Now that you know how to define a handler, it's useful to know how to call a handler from the code. 
-
-All the handlers can be accessed through the `BNetworkManager` singleton. For example, to access the last online handler you would use the following code: 
-
-```ObjC
-[BNetworkManager sharedManager].a.lastOnline getLastOnlineForUser: ... 
-```
-
-We include the `a` because this is accessing the network adapter. 
-
-To send a message, you would use:
-
-```ObjC
-[BNetworkManager sharedManager].a.core sendMessage: (id<PMessage>) message
-```
-
-A good approach to learn the SDK is first to identify the handler you are interested in and then search for it in the code. There you will see how it can be used. 
-
-## Customizing the user interface
-
-The second method is a little more complex to setup initially but it more robust over the longer term. This method involves subclassing the UI element that you need to modify. After you've made your changes, you need to find a way to tell the Chat SDK to use your subclass rather than the default class. That can be achieved using the `InterfaceManager`.
-
-The `InterfaceManager` follows a similar parttern to the `NetworkManager`. It is a singleton class that has a replacable adapter which provides methods that are used by the UI to request views. For example, when the app wants to show a user profile view, it uses the following method:
+The `InterfaceManager` follows a similar pattern as the `NetworkManager`. It is a singleton class that has a replaceable adapter which provides methods that are used by the UI to request views. For example, when the app wants to show a user profile view, it uses the following method:
 
 _iOS_
 
@@ -884,13 +861,13 @@ public Class getProfileActivity() {
 }
 ```
 
-So now, lets see what happens. When the app requests the profile view from the **interface manager**, the **interface manager** will ask it's adapter to provide the view. Since we replaced the standard adapter with a custom version, the **getProfile** method that you just created will be called. It will return your customized profile view which will be used by the Chat SDK. 
+So now, lets see what happens. When the app requests the profile view from the **interface manager**, the **interface manager** will ask its adapter to provide the view. Since we replaced the standard adapter with a custom version, the **getProfile** method that you just created will be called. It will return your customized profile view which will be used by the Chat SDK. 
 
 This method may seem a little more complex to setup initially, but it's more convenient in the long term. It means that you don't need to make any modifications to the Chat SDK library and updates can be installed without worrying about losing your changes. 
 
-## Interacting Chat SDK from a server
+## Modifying the database from your server
 
-In some cases it is useful to be 
+In some cases it may be necessary to access the Firebase database directly from your server. To do this, you can use the [Firebase Admin SDK](https://firebase.google.com/docs/auth/admin/). 
 
 
 
