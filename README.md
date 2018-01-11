@@ -4,8 +4,9 @@
 
 1. [Interacting with the server](https://github.com/chat-sdk/docs#interacting-with-the-server) - how to make requests and receive responses
 2. [Handing entities](https://github.com/chat-sdk/docs#handling-entities) - Creating, modifying and deleting entities
-3. [Code Examples](https://github.com/chat-sdk/docs#code-examples) - How to perform common tasks
-4. [UI Customization](https://github.com/chat-sdk/docs#customizing-the-user-interface) - How to customize the UI and network interactions
+3. [Custom Authentication](https://github.com/chat-sdk/docs#custom-authentication) Authenticate with Firebase using an existing app server
+4. [Code Examples](https://github.com/chat-sdk/docs#code-examples) - How to perform common tasks
+5. [UI Customization](https://github.com/chat-sdk/docs#customizing-the-user-interface) - How to customize the UI and network interactions
 
 ### Architecture and getting started
 
@@ -390,7 +391,7 @@ NM.auth().authenticateWithCachedToken().subscribe(...);
 NM.auth().logout().subscribe(...);
 ```
 
-#### Custom Authentication
+### Custom Authentication
 
 With Firebase, you can also authenticate using a custom token that's been generated on your server. It works like this:
 
@@ -401,6 +402,8 @@ With Firebase, you can also authenticate using a custom token that's been genera
 ##### Generating the token
 
 To generate a token, you should follow the Firebase [custom authentication guide](https://firebase.google.com/docs/auth/admin/create-custom-tokens).
+
+Firebase also has an Admin SDK for Node.js, Java, Python and Go which makes the process more straightforward. you can install it using this [guide](https://firebase.google.com/docs/admin/setup). 
 
 In PHP, an implementation may look like this:
 
