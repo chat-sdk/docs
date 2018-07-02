@@ -615,6 +615,15 @@ To create a thread, you need a list of user entities that you want to add. The f
 }];
 ```
 
+*Swfit*
+
+```
+_ = NM.core().createThread(withUsers: [user1!, user2!], threadCreated: {(error: Error?, thread:PThread?) in
+    let cvc = BInterfaceManager.shared().a.chatViewController(with: thread)
+    self.viewController.navigationController?.pushViewController(cvc!, animated: true)
+})
+```
+
 *Android*
 
 ```
