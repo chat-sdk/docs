@@ -59,7 +59,7 @@ To create a public thread, the UI calls the following:
 Or a more concise form:
 
 ```
-[NM.publicThread createPublicThreadWithName: name]
+[BChatSDK.publicThread createPublicThreadWithName: name]
 ```
 
 *Android*
@@ -73,7 +73,7 @@ NetworkManager.shared().a.publicThread().createPublicThreadWithName(threadName)
 Or the concise form:
 
 ```
-NM.publicThread().createPublicThreadWithName(threadName)
+ChatSDK.publicThread().createPublicThreadWithName(threadName)
 ```
 
 >**Note:**
@@ -107,7 +107,7 @@ In our example of creating a public thread:
 *iOS*
 
 ```
-[NM.publicThread createPublicThreadWithName:name].thenOnMain(^id(id<PThread> thread) {
+[BChatSDK.publicThread createPublicThreadWithName:name].thenOnMain(^id(id<PThread> thread) {
     // Success
     return Nil;
 }, ^id(NSError * error) {
@@ -119,7 +119,7 @@ In our example of creating a public thread:
 *Android*
 
 ```
-NM.publicThread().createPublicThreadWithName(threadName)
+ChatSDK.publicThread().createPublicThreadWithName(threadName)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new BiConsumer<Thread, Throwable>() {
     @Override
@@ -165,19 +165,19 @@ A couple of key points:
 In Android events are sent through an event bus using a `PublishSubject`. You can access the event bus using the following:
 
 ```
-NM.events().source()
+ChatSDK.events().source()
 ```
 
 or 
 
 ```
-NM.events().sourceOnMain()
+ChatSDK.events().sourceOnMain()
 ```
 
 When you subscribe to this source, you will receive a stream of `NetworkEvent` objects. You can also apply filters. For example:
 
 ```
-NM.events().sourceOnMain()
+ChatSDK.events().sourceOnMain()
     .filter(NetworkEvent.filterType(EventType.MessageAdded, EventType.ThreadReadReceiptUpdated))
     .filter(NetworkEvent.filterThreadEntityID(thread.getEntityID()))
     .subscribe(...);
@@ -188,7 +188,7 @@ Here we are only listening to the event types: `MessageAdded` and `ThreadReadRec
 To get a stream of all incoming messages, the following could be used:
 
 ```
-Disposable d = NM.events().sourceOnMain()
+Disposable d = ChatSDK.events().sourceOnMain()
         .filter(NetworkEvent.filterType(EventType.MessageAdded))
         .subscribe(new Consumer<NetworkEvent>() {
             @Override
@@ -330,14 +330,14 @@ To authenticate a user you need to pass an account details object to the authent
 
 ```
 BAccountDetails * accountDetails = [BAccountDetails username: @"some.email@domain.com" password:@"some password"];
-[NM.auth authenticate: accountDetails].thenOnMain(...);
+[BChatSDK.auth authenticate: accountDetails].thenOnMain(...);
 ```
 
 *Android*
 
 ```
 AccountDetails details = username("some.email@domain.com", "some password");
-NM.auth().authenticate(details).subscribe(...);
+ChatSDK.auth().authenticate(details).subscribe(...);
 ```
 
 #### Registering a new user
@@ -348,14 +348,14 @@ To register a new user, just use the Register type.
 
 ```
 BAccountDetails * accountDetails = [BAccountDetails signUp: @"Joe" password:@"Joe123"];
-[NM.auth authenticate: accountDetails].thenOnMain(...);
+[BChatSDK.auth authenticate: accountDetails].thenOnMain(...);
 ```
 
 *Android*
 
 ```
 AccountDetails details = signUp("Joe", "Joe123");
-NM.auth().authenticate(details).subscribe(...);
+ChatSDK.auth().authenticate(details).subscribe(...);
 ```
 
 #### Authenticate using cached details
@@ -365,7 +365,7 @@ The Chat SDK will automatically cache the user's login details saving them from 
 *iOS*
 
 ```
-[NM.auth authenticateWithCachedToken].thenOnMain(^id(id success) {
+[BChatSDK.auth authenticateWithCachedToken].thenOnMain(^id(id success) {
     ...
     return Nil;
 }, Nil);
@@ -374,7 +374,7 @@ The Chat SDK will automatically cache the user's login details saving them from 
 *Android*
 
 ```
-NM.auth().authenticateWithCachedToken().subscribe(...);
+ChatSDK.auth().authenticateWithCachedToken().subscribe(...);
 ```
 
 #### Logging out
@@ -382,13 +382,13 @@ NM.auth().authenticateWithCachedToken().subscribe(...);
 *iOS*
 
 ```
-[NM.auth logout];
+[BChatSDK.auth logout];
 ```
 
 *Android*
 
 ```
-NM.auth().logout().subscribe(...);
+ChatSDK.auth().logout().subscribe(...);
 ```
 
 ### Custom Authentication
@@ -439,14 +439,14 @@ The `id` should be the `id` your server uses to identify the user who is current
 
 ```
 BAccountDetails * details = [BAccountDetails token:@"Your token"];
-[NM.auth authenticate: details].thenOnMain(...);
+[BChatSDK.auth authenticate: details].thenOnMain(...);
 ```
 
 *Android*
 
 ```
 AccountDetails details = new AccountDetails.token("Your token");
-NM.auth().authenticate(details).subscribe(...);
+ChatSDK.auth().authenticate(details).subscribe(...);
 ```
 
 ### Users
@@ -484,13 +484,13 @@ To synchronize the current user with the server the following method can be used
 *iOS*
 
 ```
-[NM.core pushUser].thenOnMain(...);
+[BChatSDK.core pushUser].thenOnMain(...);
 ```
 
 *Android*
 
 ```
-NM.core().pushUser().subscribe(...);
+ChatSDK.core().pushUser().subscribe(...);
 ```
 
 #### Subscribing to a user
@@ -505,17 +505,17 @@ In case you want to handle this manually, you can use the following methods:
 *iOS*
 
 ```
-[NM.core observeUser: @"entityID"]
+[BChatSDK.core observeUser: @"entityID"]
 ```
 
 *Android*
 
 ```
 // Subscribe to user
-NM.core().userOn(user);
+ChatSDK.core().userOn(user);
 
 // Unsubscribe to the user
-NM.core().userOff(user);
+ChatSDK.core().userOff(user);
 ```
 
 #### Getting a user given the user's entity ID
@@ -549,13 +549,13 @@ The user wrapper object is used to synchronize the local user object which is st
 *iOS*
 
 ```
-[NM.contact addContact:user withType:bUserConnectionTypeContact];
+[BChatSDK.contact addContact:user withType:bUserConnectionTypeContact];
 ```
 
 *Android*
 
 ```
-NM.contact().addContact(user, ConnectionType.Contact).subscribe(...);
+ChatSDK.contact().addContact(user, ConnectionType.Contact).subscribe(...);
 ```
 
 #### Getting a list of contacts
@@ -563,13 +563,13 @@ NM.contact().addContact(user, ConnectionType.Contact).subscribe(...);
 *iOS*
 
 ```
-NSArray * users = [NM.contact contactsWithType:bUserConnectionTypeContact];
+NSArray * users = [BChatSDK.contact contactsWithType:bUserConnectionTypeContact];
 ```
 
 *Android*
 
 ```
-List<User> users = NM.contact().contacts();
+List<User> users = ChatSDK.contact().contacts();
 ```
 
 #### Adding a contact from a user ID
@@ -585,13 +585,13 @@ If you want to manage your contact list on your own server, you can use the foll
   *iOS*
   
   ```
-  [NM.contact addContact: user withType: bUserConnectionTypeContact];
+  [BChatSDK.contact addContact: user withType: bUserConnectionTypeContact];
   ```
   
   *Android*
   
   ```
-  NM.contact().addContact(user, ConnectionType.Contact);
+  ChatSDK.contact().addContact(user, ConnectionType.Contact);
   ```
 
 4. We only need to do the above steps once. Once the user is added to contacts, whenever the app launches, all the necessary listeners will be added and the user will be displayed in the contacts view. 
@@ -609,17 +609,17 @@ To create a thread, you need a list of user entities that you want to add. The f
 *iOS*
 
 ```
-[NM.core createThreadWithUsers:@[user1, user2,...] name: @"Optional Name" threadCreated:^(NSError * error, id<PThread> thread) {
-    UIViewController * cvc = [[BInterfaceManager sharedManager].a chatViewControllerWithThread:thread];
+[BChatSDK.core createThreadWithUsers:@[user1, user2,...] name: @"Optional Name" threadCreated:^(NSError * error, id<PThread> thread) {
+    UIViewController * cvc = [BChatSDK.ui chatViewControllerWithThread:thread];
     [self.navigationController pushViewController:cvc animated:YES];
 }];
 ```
 
-*Swfit*
+*Swift*
 
 ```
-_ = NM.core().createThread(withUsers: [user1!, user2!], threadCreated: {(error: Error?, thread:PThread?) in
-    let cvc = BInterfaceManager.shared().a.chatViewController(with: thread)
+_ = BChatSDK.core().createThread(withUsers: [user1!, user2!], threadCreated: {(error: Error?, thread:PThread?) in
+    let cvc = BChatSDK.ui().chatViewController(with: thread)
     self.viewController.navigationController?.pushViewController(cvc!, animated: true)
 })
 ```
@@ -627,12 +627,12 @@ _ = NM.core().createThread(withUsers: [user1!, user2!], threadCreated: {(error: 
 *Android*
 
 ```
-NM.thread().createThread("Optional Name", user1, user2, user3...)
+ChatSDK.thread().createThread("Optional Name", user1, user2, user3...)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Consumer<Thread>() {
     @Override
     public void accept(@NonNull Thread thread) throws Exception {
-        InterfaceManager.shared().a.startChatActivityForID(getApplicationContext(), thread.getEntityID());
+        ChatSDK.ui().startChatActivityForID(getApplicationContext(), thread.getEntityID());
     }
 }, new Consumer<Throwable>() {
     @Override
@@ -648,20 +648,20 @@ NM.thread().createThread("Optional Name", user1, user2, user3...)
 
 ```
 // Adding users
-[NM.core addUsers:@[user1, user2,...] toThread:thread].thenOnMain(...);
+[BChatSDK.core addUsers:@[user1, user2,...] toThread:thread].thenOnMain(...);
 
 // Removing users
-[NM.core removeUsers:@[user1, user2,...] fromThread:thread].thenOnMain(...);
+[BChatSDK.core removeUsers:@[user1, user2,...] fromThread:thread].thenOnMain(...);
 ```
 
 *Android*
 
 ```
 // Adding users
-NM.thread().addUsersToThread(user1, user2,...).subscribe(...);
+ChatSDK.thread().addUsersToThread(user1, user2,...).subscribe(...);
 
 // Removing users
-NM.thread().removeUsersFromThread(user1, user2,...).subscribe(...);
+ChatSDK.thread().removeUsersFromThread(user1, user2,...).subscribe(...);
 ```
 
 #### Creating a public thread
@@ -671,8 +671,9 @@ Public threads are visible to everyone who is logged into the app. They are more
 *iOS*
 
 ```
-[NM.publicThread createPublicThreadWithName:name].thenOnMain(^id(id<PThread> thread) {
-    UIViewController * vc = [[BInterfaceManager sharedManager].a chatViewControllerWithThread:thread];
+[BChatSDK.publicThread createPublicThreadWithName:name].thenOnMain(^id(id<PThread> thread) {
+    UIViewController * vc = [BChatSDK.ui chatViewControllerWithThread:thread];
+    
     [self.navigationController pushViewController:vc animated:YES];
     return Nil;
 }, ^id(NSError * error) {
@@ -684,13 +685,13 @@ Public threads are visible to everyone who is logged into the app. They are more
 *Android*
 
 ```
-NM.publicThread().createPublicThreadWithName(threadName)
+ChatSDK.publicThread().createPublicThreadWithName(threadName)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new BiConsumer<Thread, Throwable>() {
     @Override
     public void accept(Thread thread, Throwable throwable) throws Exception {
         if(throwable == null) {
-            InterfaceManager.shared().a.startChatActivityForID(getContext(), thread.getEntityID());
+            ChatSDK.ui().startChatActivityForID(getContext(), thread.getEntityID());
         }
         else {
           // Handle error
@@ -707,13 +708,13 @@ Sometimes it's useful to get a full list of threads for a particular type.
 *iOS*
 
 ```
-NSArray * threads = [NM.core threadsWithType:bThreadTypePublicGroup];
+NSArray * threads = [BChatSDK.core threadsWithType:bThreadTypePublicGroup];
 ```
 
 *Android*
 
 ```
-List<Thread> * threads = NM.thread().getThreads(ThreadType.Public);
+List<Thread> * threads = ChatSDK.thread().getThreads(ThreadType.Public);
 ```
 
 ##### Private Threads
@@ -721,13 +722,13 @@ List<Thread> * threads = NM.thread().getThreads(ThreadType.Public);
 *iOS*
 
 ```
-NSArray * threads = [NM.core threadsWithType:bThreadFilterPrivate];
+NSArray * threads = [BChatSDK.core threadsWithType:bThreadFilterPrivate];
 ```
 
 *Android*
 
 ```
-List<Thread> * threads = NM.thread().getThreads(ThreadType.Private);
+List<Thread> * threads = ChatSDK.thread().getThreads(ThreadType.Private);
 ```
 
 ### Messaging
@@ -737,13 +738,13 @@ Send a text message to a user:
 _iOS_
 
 ```
-[NM.core sendMessageWithText:text withThreadEntityID:_thread.entityID].thenOnMain(...);
+[BChatSDK.core sendMessageWithText:text withThreadEntityID:_thread.entityID].thenOnMain(...);
 ```
 
 _Android_
 
 ```
-NM.thread().sendMessageWithText("Message Text", thread).subscribe(...);
+ChatSDK.thread().sendMessageWithText("Message Text", thread).subscribe(...);
 ```
 
 ## Customizing the User Interface
@@ -807,13 +808,13 @@ The `InterfaceManager` follows a similar pattern as the `NetworkManager`. It is 
 _iOS_
 
 ```
-UIViewController * profileView = [[BInterfaceManager  sharedManager].a profileViewControllerWithUser:user];
+UIViewController * profileView = [BChatSDK.ui profileViewControllerWithUser:user];
 ```
 
 _Android_
 
 ```
-InterfaceManager.shared().a.startProfileActivity(getContext(), clickedUser.getEntityID());
+ChatSDK.ui().startProfileActivity(getContext(), clickedUser.getEntityID());
 ```
 
 Notice that the calling class just requests the profile view controller or activity. It has no idea what class will actually be returned. That is decided by the interface manager. 
@@ -837,13 +838,13 @@ Now we need to tell the Chat SDK to use our custom interface adapter. In the mai
 _iOS_
 
 ```
-[BInterfaceManager sharedManager].a = [[MyAppDefaultInterfaceAdapter alloc] init];
+BChatSDK.shared.interfaceManager = [[MyAppDefaultInterfaceAdapter alloc] init];
 ```
 
 _Android_
 
 ```
-InterfaceManager.shared().a = new MyAppInterfaceAdapter(context);
+ChatSDK.shared().setInterfaceAdapter(new MyAppInterfaceAdapter(context));
 ```
 
 Next, we need to subclass the view we want to change. For example, If we wanted to modify the profile view, the first step would be to create a subclass. We could call this `MyAppProfileViewController` for iOS or `MyAppProfileActivity` for Android.
@@ -931,7 +932,7 @@ public interface CustomMessageHandler {
 Then you need to register your new class with the interface manager:
 
 ```
-InterfaceManager.shared().a.addCustomMessageHandler(new YourCustomMessageHandler());
+ChatSDK.ui().addCustomMessageHandler(new YourCustomMessageHandler());
 ```
 
 Then you need to implement the `updateMessageCellView` method. This method will be called for every cell and cells can be reused so if we're not careful we can run into problems. Imagine we want to add an icon to text message cells. 
