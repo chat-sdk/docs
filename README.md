@@ -233,22 +233,22 @@ Common tasks are handled by the `BStorageManager` singleton iOS and `co.chatsdk.
 *iOS*
 
 ```
-id<PMessage> message = [[BStorageManager sharedManager].a createEntity:bMessageEntity];
+id<PMessage> message = [BChatSDK.db createEntity:bMessageEntity];
 ```
 
 *Android*
 
 ```
-Message message = StorageManager.shared().createEntity(Message.class);
+Message message = ChatSDK.db().createEntity(Message.class);
 ```
-
+ChatSDK.db()
 ### Saving an entity
 
 *iOS*
 
 ```
 message.type = @(bMessageTypeText);
-[[BStorageManager sharedManager].a save];
+[BChatSDK.db save];
 ```
 
 *Android*
@@ -263,13 +263,13 @@ message.update();
 *iOS*
 
 ```
-id<PUser> user = [[BStorageManager sharedManager].a fetchEntityWithID:userEntityID withType:bUserEntity];
+id<PUser> user = [BChatSDK.db fetchEntityWithID:userEntityID withType:bUserEntity];
 ```
 
 *Android*
 
 ```
-User user = StorageManager.shared().fetchEntityWithEntityID(userEntityID, User.class);
+User user = ChatSDK.db().fetchEntityWithEntityID(userEntityID, User.class);
 ```
 
 > There is also a useful `fetchOrCreate` method which will try to fetch an entity and if it doesn't exist, return a new entity. 
@@ -279,14 +279,14 @@ User user = StorageManager.shared().fetchEntityWithEntityID(userEntityID, User.c
 *iOS*
 
 ```
-id<PUser> user = [[BStorageManager sharedManager].a fetchEntityWithID:userEntityID withType:bUserEntity];
-[[BStorageManager sharedManager].a deleteEntity: user]
+id<PUser> user = [BChatSDK.db fetchEntityWithID:userEntityID withType:bUserEntity];
+[BChatSDK.db deleteEntity: user]
 ```
 
 *Android*
 
 ```
-User user = StorageManager.shared().fetchEntityWithEntityID(userEntityID, User.class);
+User user = ChatSDK.db().fetchEntityWithEntityID(userEntityID, User.class);
 DaoCore.deleteEntity(user);
 ```
 
@@ -300,7 +300,7 @@ Get the current user's contacts.
 
 ```
 NSPredicate * predicate = [NSPredicate predicateWithFormat:@"type = %@ AND owner = %@", @(bUserConnectionTypeContact), currentUser];
-NSArray * entities = [[BStorageManager sharedManager].a fetchEntitiesWithName:bUserConnectionEntity withPredicate:predicate];
+NSArray * entities = [BChatSDK.db fetchEntitiesWithName:bUserConnectionEntity withPredicate:predicate];
 ```
 
 *Android*
@@ -365,7 +365,7 @@ The Chat SDK will automatically cache the user's login details saving them from 
 *iOS*
 
 ```
-[BChatSDK.auth authenticateWithCachedToken].thenOnMain(^id(id success) {
+[BChatSDK.auth authenticate].thenOnMain(^id(id success) {
     ...
     return Nil;
 }, Nil);
@@ -374,7 +374,7 @@ The Chat SDK will automatically cache the user's login details saving them from 
 *Android*
 
 ```
-ChatSDK.auth().authenticateWithCachedToken().subscribe(...);
+ChatSDK.auth().authenticate().subscribe(...);
 ```
 
 #### Logging out
@@ -628,17 +628,12 @@ _ = BChatSDK.core().createThread(withUsers: [user1!, user2!], threadCreated: {(e
 
 ```
 ChatSDK.thread().createThread("Optional Name", user1, user2, user3...)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Consumer<Thread>() {
-    @Override
-    public void accept(@NonNull Thread thread) throws Exception {
-        ChatSDK.ui().startChatActivityForID(getApplicationContext(), thread.getEntityID());
-    }
-}, new Consumer<Throwable>() {
-    @Override
-    public void accept(@NonNull Throwable throwable) throws Exception {
-        // Handle error
-    }
+    .observeOn(AndroidSchedulers.mainThread())
+    .subscribe((Consumer<java.lang.Thread>) thread -> {
+    // Start the chat activity
+    ChatSDK.ui().startChatActivityForID(getApplicationContext(), thread.getEntityID());
+}, (Consumer<Throwable>) throwable -> {
+    // Handle error
 });
 ```
 
@@ -686,17 +681,15 @@ Public threads are visible to everyone who is logged into the app. They are more
 
 ```
 ChatSDK.publicThread().createPublicThreadWithName(threadName)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new BiConsumer<Thread, Throwable>() {
-    @Override
-    public void accept(Thread thread, Throwable throwable) throws Exception {
-        if(throwable == null) {
-            ChatSDK.ui().startChatActivityForID(getContext(), thread.getEntityID());
-        }
-        else {
-          // Handle error
-	    }
-});
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((thread, throwable) -> {
+                    if(throwable == null) {
+                        ChatSDK.ui().startChatActivityForID(getContext(), thread.getEntityID());
+                    }
+                    else {
+                        // Handle error
+                    }
+
 ```
 
 #### Getting a list of threads for a user
@@ -798,7 +791,7 @@ In the future you may want to upgrade the Chat SDK library. To do this, you need
   git mergetool
   ```
 
-[](#subclassing-using-the-inerface-manager)
+[](#subclassing-using-the-interface-manager)
 ### Using the interface manager
 
 The second method is a little more complex to set up initially but it more robust over the longer term. This method involves subclassing the UI element that you need to modify. After you've made your changes, you need to find a way to tell the Chat SDK to use your subclass rather than the default class. That can be achieved using the `InterfaceManager`.
