@@ -336,7 +336,7 @@ BAccountDetails * accountDetails = [BAccountDetails username: @"some.email@domai
 *Android*
 
 ```
-AccountDetails details = username("some.email@domain.com", "some password");
+AccountDetails details = AccountDetails.username("some.email@domain.com", "some password");
 ChatSDK.auth().authenticate(details).subscribe(...);
 ```
 
@@ -354,7 +354,7 @@ BAccountDetails * accountDetails = [BAccountDetails signUp: @"Joe" password:@"Jo
 *Android*
 
 ```
-AccountDetails details = signUp("Joe", "Joe123");
+AccountDetails details = AccountDetails.signUp("Joe", "Joe123");
 ChatSDK.auth().authenticate(details).subscribe(...);
 ```
 
@@ -445,7 +445,7 @@ BAccountDetails * details = [BAccountDetails token:@"Your token"];
 *Android*
 
 ```
-AccountDetails details = new AccountDetails.token("Your token");
+AccountDetails details = AccountDetails.token("Your token");
 ChatSDK.auth().authenticate(details).subscribe(...);
 ```
 
